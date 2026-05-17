@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Tienda - Catálogo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2> Mi E-Commerce</h2>
+        <button id="logoutBtn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <div class="main-layout">
+        <div class="products-section">
+            colu<h3>Catálogo de Productos</h3>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar producto...">
+                <button onclick="fetchProducts()">Buscar</button>
+            </div>
+            <div id="productsContainer" class="products-grid">
+                </div>
+        </div>
+
+        <div class="cart-section">
+            <h3> Mi Carrito</h3>
+            <div id="cartItems">
+                <p>El carrito está vacío.</p>
+            </div>
+            <hr>
+            <h4>Total: $<span id="cartTotal">0</span></h4>
+            <button id="checkoutBtn" onclick="processPurchase()">Realizar Compra</button>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+  
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let cart = [];
+
+        async function fetchProducts() {
+            const search = document.getElementById('searchInput').value;
+            const url = search ? `http://localhost:3000/api/products?search=${search}` : 'http://localhost:3000/api/products';
+            
+            try {
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const products = await res.json();
+                displayProducts(products);
+            } catch (err) {
+                console.error("Error al obtener productos", err);
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+
+            if (products.length === 0) {
+                container.innerHTML = '<p>No se encontraron productos.</p>';
+                return;
+            }
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <h4>${p.name}</h4>
+                    <p>${p.description}</p>
+                    <p class="price">$${p.price}</p>
+                    <p class="stock">Disponibles: ${p.stock}</p>
+                    <button onclick="addToCart('${p._id}', '${p.name}', ${p.price}, ${p.stock})">Agregar al Carrito</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addToCart(id, name, price, maxStock) {
+            const existingItem = cart.find(item => item.productId === id);
+            
+            if (existingItem) {
+                if (existingItem.quantity >= maxStock) {
+                    alert('No hay más stock disponible de este producto.');
+                    return;
+                }
+                existingItem.quantity++;
+            } else {
+                cart.push({ productId: id, name, price, quantity: 1 });
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            const totalSpan = document.getElementById('cartTotal');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p>El carrito está vacío.</p>';
+                totalSpan.innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>$${item.price * item.quantity}</span>
+                `;
+                container.appendChild(div);
+            });
+            totalSpan.innerText = total;
+        }
+
+        async function processPurchase() {
+            if (cart.length === 0) {
+                alert('El carrito está vacío.');
+                return;
+            }
+
+            const orderProducts = cart.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity
+            }));
+
+            const res = await fetch('http://localhost:3000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ products: orderProducts })
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+                alert(`Error: ${data.error}`);
+            } else {
+                alert('¡Compra realizada con éxito! 🎉');
+                cart = [];
+                updateCartUI();
+                fetchProducts();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
