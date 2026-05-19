@@ -78,16 +78,7 @@ PROYECTO FINAL/
 ├── .gitignore              # Archivos excluidos del control de versiones
 └── README.md               # Documentación general y manual de operación
 
-```
 
-"""
-
-with open("README.md", "w", encoding="utf-8") as f:
-f.write(readme_content)
-
-print("Archivo README.md generado exitosamente.")
-
-```
 
 Aquí tienes el texto completo estructurado en formato **Markdown** profesional para que puedas agregarlo directamente a tu archivo `README.md` en GitHub:
 
