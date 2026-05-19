@@ -50,7 +50,6 @@ El proyecto mantiene una estricta separación de responsabilidades para facilita
 ```
 
 ```text
-Archivo README.md generado exitosamente.
 
 ```text
 PROYECTO FINAL/
@@ -89,8 +88,6 @@ f.write(readme_content)
 print("Archivo README.md generado exitosamente.")
 
 ```
-Su archivo Markdown para el repositorio está listo.
-[file-tag: code-generated-file-0-1779149490379992563]
 
 Aquí tienes el texto completo estructurado en formato **Markdown** profesional para que puedas agregarlo directamente a tu archivo `README.md` en GitHub:
 
