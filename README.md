@@ -16,11 +16,11 @@ Proyecto escolar para la materia de Programación Web. Consiste en una plataform
    ```bash
    npm install
    ```
-3. Configurar las variables de entorno en un archivo `.env` en la raíz del proyecto:
+3. Configurar las variables de entorno en un archivo `.env` en la raíz del proyecto (reemplaza con tus credenciales de Atlas):
    ```text
    PORT=3000
    TOKEN_SECRET=ClaveSecreta_Para_JWT_2026
-   DB_CONNECT=mongodb+srv://rvelasco11_db_user:aoaSGZNyu09w1xlv@cluster0.3mdkrmd.mongodb.net/ProyectoWeb?appName=Cluster0
+   DB_CONNECT=mongodb+srv://<TU_USUARIO>:<TU_CONTRASEÑA>@cluster0.xxxxxx.mongodb.net/ProyectoWeb?retryWrites=true&w=majority
    ```
 4. Arrancar el servidor en modo desarrollo:
    ```bash
